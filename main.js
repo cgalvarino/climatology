@@ -558,10 +558,10 @@ function processData($xml,url,title,year,v) {
     });
   }
   else { // ncSOS response
-    d.uom   = $xml.find('uom[code]').attr('code');
-    var nil = [$xml.find('nilValue').text()];
+    d.uom   = $xml.find('uom[code],swe\\:uom[code]').attr('code');
+    var nil = [$xml.find('nilValue,swe\\:nilValue').text()];
     d.label = '&nbsp;<a target=_blank href=\'' + url + '\'>' + title + ' (' + d.uom + ')' + '</a>';
-    _.each($xml.find('values').text().split(" "),function(o) {
+    _.each($xml.find('values,swe\\:values').text().split(" "),function(o) {
       var a = o.split(',');
       if ((a.length == 2) && $.isNumeric(a[1]) && nil.indexOf(a[1]) < 0) {
         d.data.push([isoDateToDate(a[0]),a[1]]);

@@ -232,22 +232,32 @@ function plot() {
   _.each(_.pluck(plotData,'id'),function(o) {
     $('#' + o).remove();
   });
-  if (plotData.length == 4) {
+  if (plotData.length == 4 && !_.findWhere(plotData,{breaksInserted : true})) {
     var obsData = _.findWhere(plotData,{id : 'obs'});
     if (obsData) {
       obsData.lines = {show : true,lineWidth : 3}; 
     }
+    obsData.data = insertBreaks(obsData.data);
+    obsData.breaksInserted = true;
 
     var minData = _.findWhere(plotData,{id : 'min'});
     if (minData) {
       minData.fillBetween = 'max';
       minData.lines = {show : true,lineWidth : 1,fill : true,fillColor : 'rgba(237,194,64,0.20)'};
     }
+    minData.data = insertBreaks(minData.data);
+    minData.breaksInserted = true;
 
     var maxData = _.findWhere(plotData,{id : 'max'});
     if (maxData) {
       maxData.lines  = {show : true,lineWidth : 1};
     }
+    maxData.data = insertBreaks(maxData.data);
+    maxData.breaksInserted = true;
+
+    var avgData = _.findWhere(plotData,{id : 'avg'});
+    avgData.data = insertBreaks(avgData.data);
+    avgData.breaksInserted = true;
 
     var stackOrder = _.invert(['max','min','avg','obs']);
     plotData = _.sortBy(plotData,function(o){return stackOrder[o.id]});
@@ -585,6 +595,22 @@ function stats(data) {
   };
 }
 
+function insertBreaks(data) {
+  // Insert a null between any non-consecutive days to keep points from being
+  // connected in the graph.
+  var d = []; 
+  if (data.length > 0) {
+    d.push(data[0]);
+  }
+  for (var i = 1; i < data.length; i++) {
+    if (data[i - 1][0].getDOY() != data[i][0].getDOY() - 1) {
+      d.push(null);
+    }
+    d.push(data[i]);
+  }
+  return d;
+}
+
 function showToolTip(x,y,contents) {
   $('<div id="tooltip">' + contents + '</div>').css({
      position           : 'absolute'
@@ -620,7 +646,7 @@ function isoDateToDate(s) {
 }
 
 Date.prototype.getDOY = function() {
-  var onejan = new Date(this.getFullYear(),0,1);
+  var onejan = new Date(Date.UTC(this.getFullYear(),0,1));
   return Math.ceil((this - onejan) / 86400000);
 }
 

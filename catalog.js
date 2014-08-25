@@ -92,5 +92,5 @@ var catalog = {
 var defaults = {
    'year' : 2011
   ,'var'  : 'Temperature'
-  ,'site' : 'CAP2'
+  ,'site' : 'C10'
 };

@@ -282,7 +282,9 @@ function plot() {
        $('#time-series-graph')
       ,plotData
       ,{
-         xaxis     : {mode  : "time"}
+         axisLabels : {show : true}
+        ,xaxis     : {mode  : "time"}
+        ,yaxes     : [{position : 'left',axisLabel : obsData ? obsData.uom : ''}]
         ,crosshair : {mode  : 'x'   }
         ,grid      : {
            backgroundColor : {colors : ['#fff','#C3DFE5']}
@@ -492,7 +494,7 @@ function postProcessData(d) {
   d.data = _.filter(d.data,function(o) {
     return o[0].format('UTC:mmdd') != '0229';
   });
-  d.label = '&nbsp;' + d.year + ' ' + d.title + ' (' + d.uom + ')';
+  d.label = '&nbsp;' + d.year + ' ' + d.title;
 
   for (var i = 0; i < d.data.length; i++) {
     d.data[i][1] = Number(d.data[i][1]);
@@ -535,7 +537,7 @@ function postProcessData(d) {
   var dAvg = {
      id    : 'avg'
     ,uom   : d.uom
-    ,label : '&nbsp;Average ' + d.title + ' (' + d.uom + ')'
+    ,label : '&nbsp;Average ' + d.title
     ,data  : []
     ,avgInterval : d.avgInterval
   };
@@ -550,7 +552,7 @@ function postProcessData(d) {
   var dMin = {
      id    : 'min'
     ,uom   : d.uom
-    ,label : '&nbsp;Minimum ' + d.title + ' (' + d.uom + ')'
+    ,label : '&nbsp;Minimum ' + d.title
     ,data  : []
     ,avgInterval : d.avgInterval
   };
@@ -567,7 +569,7 @@ function postProcessData(d) {
   var dMax = {
      id    : 'max'
     ,uom   : d.uom
-    ,label : '&nbsp;Maximum ' + d.title + ' (' + d.uom + ')'
+    ,label : '&nbsp;Maximum ' + d.title
     ,data  : []
     ,avgInterval : d.avgInterval
   };
@@ -593,7 +595,7 @@ function processData($xml,title,year,v) {
   if (ncss.length > 0) { // NetcdfSubset response
     ncss.each(function() {
       var point = $(this);
-      d.uom = point.find('[name=temp]').attr('units');
+      d.uom = point.find('[name=' + v + ']').attr('units');
       var t = point.find('[name=date]').text();
       // undo fake dates for stats
       if (!_.isUndefined(year)) {
@@ -603,7 +605,7 @@ function processData($xml,title,year,v) {
          isoDateToDate(t)
         ,point.find('[name=' + v + ']').text()
       ]);
-      d.label = '&nbsp;' + title + ' (' + d.uom + ')';
+      d.label = '&nbsp;' + title;
     });
   }
   else { // ncSOS response

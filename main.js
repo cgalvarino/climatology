@@ -294,7 +294,15 @@ function plot() {
         ,legend    : {
            backgroundOpacity : 0.3
           ,labelFormatter    : function(label,series) {
-            return /min|max/.test(series.id) ? null : label;
+            if (series.id == 'min') {
+              return label.replace(/Minimum/,'Min - Max');
+            }
+            else if (series.id == 'max') {
+              return null;
+            }
+            else {
+              return label;
+            }
           }
         }
         // repeat 1st color to get outer edges of filled area the same color
@@ -528,7 +536,7 @@ function postProcessData(d) {
   var dMin = {
      id    : 'min'
     ,uom   : d.uom
-    ,label : 'Minimum'
+    ,label : '&nbsp;Minimum ' + d.title + ' (' + d.uom + ')'
     ,data  : []
     ,avgInterval : d.avgInterval
   };
@@ -545,7 +553,7 @@ function postProcessData(d) {
   var dMax = {
      id    : 'max'
     ,uom   : d.uom
-    ,label : 'Maximum'
+    ,label : '&nbsp;Maximum ' + d.title + ' (' + d.uom + ')'
     ,data  : []
     ,avgInterval : d.avgInterval
   };

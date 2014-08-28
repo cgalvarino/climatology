@@ -159,7 +159,7 @@ function init() {
         })
         .on('error.validator.bv', function(e, data) {
           data.element
-          .data('bv.messages')
+          .data('bv.legend')
           // Hide all the messages
           .find('.help-block[data-bv-for="' + data.field + '"]').hide()
           // Show only message associated with current validator
@@ -251,8 +251,9 @@ function plot() {
   _.each(_.pluck(plotData,'id'),function(o) {
     $('#' + o).remove();
   });
+
+  var obsData = _.findWhere(plotData,{id : 'obs'});
   if (plotData.length == 4 && !_.findWhere(plotData,{breaksInserted : true})) {
-    var obsData = _.findWhere(plotData,{id : 'obs'});
     obsData.lines = {show : true,lineWidth : 3}; 
     obsData.data = insertBreaks(obsData.data,obsData.avgInterval);
     obsData.breaksInserted = true;
@@ -292,7 +293,7 @@ function plot() {
         ,zoom      : {interactive : true}
         ,pan       : {interactive : true}
         ,legend    : {
-           backgroundOpacity : 0.3
+           container         : $('#legend')
           ,labelFormatter    : function(label,series) {
             if (series.id == 'min') {
               return label.replace(/Minimum/,'Min - Max');
@@ -310,6 +311,11 @@ function plot() {
       }
     ); 
     hideSpinner();
+  }
+
+  if (plotData.length == 4) {
+    console.dir(obsData.descr);
+    $('#summary').html('The data in the above graph was taken from ' + obsData.descr.name + '.  It has a reporting frequency of ' + obsData.descr.freq + '.');
   }
 }
 
@@ -370,6 +376,7 @@ function query() {
         ,postProcess : true
         ,year        : $('#years .active').text()
         ,avgInterval : $('#averages .active').text()
+        ,descr       : catalog['sites'][siteQuery.attributes.group][siteQuery.attributes.name].descr
       }
     ];
   }
@@ -387,6 +394,7 @@ function query() {
         ,title       : $('#years .active').text() + ' ' + $('#vars .active').text() + ' from SABGOM'
         ,id          : 'obs'
         ,avgInterval : $('#averages .active').text()
+        ,descr       : catalog['models']['SABGOM'].descr
       }
       ,{
         getObs       : catalog['models']['SABGOM'].getObs(
@@ -434,16 +442,17 @@ function query() {
   }
 
   plotData = [];
-  $('#messages').empty();
+  $('#legend').empty();
+  $('#summary').empty();
 
   var msg = [];
   for (var i = 0; i < reqs.length; i++) {
-    msg.push("<span id='" + reqs[i].id + "'>" + reqs[i].title + '<img src="img/progressDots.gif"><br></span>');
+    msg.push("<span class='smallFont' id='" + reqs[i].id + "'>Loading " + reqs[i].title + '<img src="img/progressDots.gif"><br></span>');
     if (console && console.log) {
       console.log({title : reqs[i].title,url : reqs[i].getObs.u});
     }
   }
-  $('#messages').html(msg.join(''));
+  $('#legend').html(msg.join(''));
 
   $.when(
     (function() {
@@ -458,10 +467,12 @@ function query() {
           ,id          : reqs[i].id
           ,postProcess : reqs[i].postProcess
           ,avgInterval : reqs[i].avgInterval
+          ,descr       : reqs[i].descr
           ,success     : function(r) {
             var data = processData($(r),this.title,this.year,this.v);
-            data[0].id = this.id;
+            data[0].id          = this.id;
             data[0].avgInterval = this.avgInterval;
+            data[0].descr       = this.descr;
             if (this.postProcess) {
               data = postProcessData(data[0]);
             }

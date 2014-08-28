@@ -77,6 +77,24 @@ function init() {
     query();
   });
 
+  _.each(['Day','Month'],function(o) {
+    $('#averages').after($('</h4>')).append('<button type="button" data-value="' + o + '" class="btn btn-default">' + o + '</button> ');
+  });
+  $('#averages [data-value="' + defaults.avg + '"]').removeClass('btn-default').addClass('btn-custom-lighten active');
+  $('#averages button').click(function() {
+    $(this).blur();
+    var selVal = $(this).data('value');
+    $('#averages button').each(function() {
+      if ($(this).data('value') == selVal) {
+        $(this).removeClass('btn-default').addClass('btn-custom-lighten').addClass('active');
+      }
+      else {
+        $(this).removeClass('btn-custom-lighten').removeClass('active').addClass('btn-default');
+      }
+    });
+    query();
+  });
+
   var wkt = new OpenLayers.Format.WKT();
   var i = 1;
   _.each(_.sortBy(_.keys(catalog.sites),function(o){return o.toUpperCase()}),function(grp) {
@@ -652,7 +670,7 @@ Date.prototype.getDOY = function() {
 
 function resize() {
   var offset = 51;
-  $('#map').height($('#time-series-graph').height() - $('#vars').height() - $('#years').height() - $($('.bootstrap-select')[0]).height() - offset);
+  $('#map').height($('#time-series-graph').height() - $('#vars').height() - $('#years').height() - $('#averages').height() - $($('.bootstrap-select')[0]).height() - offset);
   map && map.updateSize();
   plot();
 }

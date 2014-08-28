@@ -93,4 +93,5 @@ var defaults = {
    'year' : 2011
   ,'var'  : 'Temperature'
   ,'site' : 'C10'
+  ,'avg'  : 'Day'
 };

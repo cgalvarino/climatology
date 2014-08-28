@@ -69,14 +69,18 @@ var catalog = {
   }
   ,'models' : {
     'SABGOM' : {
-      'getObs' : function(v,year,lon,lat,stat) {
+      'getObs' : function(v,year,avg,lon,lat,stat) {
         var vh = {
            'Temperature' : ['temp','']
           ,'Salinity'    : ['salt','_salt']
         };
-        var d = 'clim_daily_avg_surface';
+        var ah = {
+           'Day'   : 'daily'
+          ,'Month' : 'monthly'
+        };
+        var d = 'clim_' + ah[avg] + '_avg_surface';
         if (stat) {
-          d    = 'clim_all_daily_' + stat + '_surface'
+          d    = 'clim_all_' + ah[avg] + '_' + stat + '_surface'
           year = '2018';
         }
         return {

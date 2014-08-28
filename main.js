@@ -19,14 +19,15 @@ function init() {
       var y = item.datapoint[1];
       if (prevPoint != item.dataIndex) {
         $('#tooltip').remove();
-        var d = x.format('UTC:mmm dd, yyyy');
+        var format = item.series.avgInterval == 'Day' ? 'UTC:mmm dd, yyyy' : 'UTC:mmm yyyy';
+        var d = x.format(format);
         // display date from stat calcs if avaialble
         if (item.series.data[item.dataIndex][2]) {
-          d = item.series.data[item.dataIndex][2].format('UTC:mmm dd, yyyy');
+          d = item.series.data[item.dataIndex][2].format(format);
         }
-        // but only show the year if this is the avg line
+        // generalize further if this is the avg line
         if (item.series.id == 'avg') {
-          d = x.format('UTC:mmm dd');
+          d = x.format(item.series.avgInterval == 'Day' ? 'UTC:mmm dd' : 'UTC:mmm');
         }
         showToolTip(
            item.pageX
@@ -243,7 +244,7 @@ function init() {
   lyrQuery.addFeatures([f.clone()]);
   map.setCenter([f.geometry.x,f.geometry.y],5);
 
-  query();
+  // query();
 }
 
 function plot() {
@@ -255,7 +256,7 @@ function plot() {
     if (obsData) {
       obsData.lines = {show : true,lineWidth : 3}; 
     }
-    obsData.data = insertBreaks(obsData.data);
+    obsData.data = insertBreaks(obsData.data,obsData.avgInterval);
     obsData.breaksInserted = true;
 
     var minData = _.findWhere(plotData,{id : 'min'});
@@ -263,18 +264,18 @@ function plot() {
       minData.fillBetween = 'max';
       minData.lines = {show : true,lineWidth : 1,fill : true,fillColor : 'rgba(237,194,64,0.20)'};
     }
-    minData.data = insertBreaks(minData.data);
+    minData.data = insertBreaks(minData.data,obsData.avgInterval);
     minData.breaksInserted = true;
 
     var maxData = _.findWhere(plotData,{id : 'max'});
     if (maxData) {
       maxData.lines  = {show : true,lineWidth : 1};
     }
-    maxData.data = insertBreaks(maxData.data);
+    maxData.data = insertBreaks(maxData.data,obsData.avgInterval);
     maxData.breaksInserted = true;
 
     var avgData = _.findWhere(plotData,{id : 'avg'});
-    avgData.data = insertBreaks(avgData.data);
+    avgData.data = insertBreaks(avgData.data,obsData.avgInterval);
     avgData.breaksInserted = true;
 
     var stackOrder = _.invert(['max','min','avg','obs']);
@@ -366,6 +367,7 @@ function query() {
         ,id : 'obs'
         ,postProcess : true
         ,year : $('#years .active').text()
+        ,avgInterval : $('#averages .active').text()
       }
     ];
   }
@@ -376,16 +378,19 @@ function query() {
         getObs : catalog['models']['SABGOM'].getObs(
            $('#vars .active').text()
           ,$('#years .active').text()
+          ,$('#averages .active').text()
           ,geom.x
           ,geom.y
         )
         ,title : $('#years .active').text() + ' ' + $('#vars .active').text() + ' from SABGOM'
         ,id    : 'obs'
+        ,avgInterval : $('#averages .active').text()
       }
       ,{
         getObs : catalog['models']['SABGOM'].getObs(
            $('#vars .active').text()
           ,false
+          ,$('#averages .active').text()
           ,geom.x
           ,geom.y
           ,'min'
@@ -393,11 +398,13 @@ function query() {
         ,title : 'Minimum ' + $('#vars .active').text() + ' from SABGOM'
         ,year  : $('#years .active').text()
         ,id    : 'min'
+        ,avgInterval : $('#averages .active').text()
       }
       ,{
         getObs : catalog['models']['SABGOM'].getObs(
            $('#vars .active').text()
           ,false
+          ,$('#averages .active').text()
           ,geom.x
           ,geom.y
           ,'max'
@@ -405,11 +412,13 @@ function query() {
         ,title : 'Maximum ' + $('#vars .active').text() + ' from SABGOM'
         ,year  : $('#years .active').text()
         ,id    : 'max'
+        ,avgInterval : $('#averages .active').text()
       }
       ,{
         getObs : catalog['models']['SABGOM'].getObs(
            $('#vars .active').text()
           ,false
+          ,$('#averages .active').text()
           ,geom.x
           ,geom.y
           ,'avg'
@@ -417,6 +426,7 @@ function query() {
         ,title : 'Average ' + $('#vars .active').text() + ' from SABGOM'
         ,year  : $('#years .active').text()
         ,id    : 'avg'
+        ,avgInterval : $('#averages .active').text()
       }
     ];
   }
@@ -442,9 +452,11 @@ function query() {
           ,year        : reqs[i].year
           ,id          : reqs[i].id
           ,postProcess : reqs[i].postProcess
+          ,avgInterval : reqs[i].avgInterval
           ,success     : function(r) {
             var data = processData($(r),this.url,this.title,this.year,this.v);
             data[0].id = this.id;
+            data[0].avgInterval = this.avgInterval;
             if (this.postProcess) {
               data = postProcessData(data[0]);
             }
@@ -508,6 +520,7 @@ function postProcessData(d) {
     ,uom   : d.uom
     ,label : '&nbsp;<a target=_blank href=\'' + d.url + '\'>Average ' + d.title + ' (' + d.uom + ')' + '</a>'
     ,data  : []
+    ,avgInterval : d.avgInterval
   };
   for (o in vals) {
     dAvg.data.push([
@@ -522,6 +535,7 @@ function postProcessData(d) {
     ,uom   : d.uom
     ,label : 'Minimum'
     ,data  : []
+    ,avgInterval : d.avgInterval
   };
   for (o in vals) {
     // you could do some QA/QC here to count # of obs
@@ -538,6 +552,7 @@ function postProcessData(d) {
     ,uom   : d.uom
     ,label : 'Maximum'
     ,data  : []
+    ,avgInterval : d.avgInterval
   };
   for (o in vals) {
     dMax.data.push([
@@ -613,15 +628,19 @@ function stats(data) {
   };
 }
 
-function insertBreaks(data) {
-  // Insert a null between any non-consecutive days to keep points from being
+function insertBreaks(data,avgInterval) {
+  var h = {
+     'Day'   : function(d) {return d.getDOY()}
+    ,'Month' : function(d) {return d.getUTCMonth()}
+  };
+  // Insert a null between any non-consecutive avgInterval's to keep points from being
   // connected in the graph.
   var d = []; 
   if (data.length > 0) {
     d.push(data[0]);
   }
   for (var i = 1; i < data.length; i++) {
-    if (data[i - 1][0].getDOY() != data[i][0].getDOY() - 1) {
+    if (h[avgInterval](data[i - 1][0]) != h[avgInterval](data[i][0]) - 1) {
       d.push(null);
     }
     d.push(data[i]);

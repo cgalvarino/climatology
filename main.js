@@ -439,6 +439,9 @@ function query() {
   var msg = [];
   for (var i = 0; i < reqs.length; i++) {
     msg.push("<span id='" + reqs[i].id + "'>" + reqs[i].title + '<img src="img/progressDots.gif"><br></span>');
+    if (console && console.log) {
+      console.log({title : reqs[i].title,url : reqs[i].getObs.u});
+    }
   }
   $('#messages').html(msg.join(''));
 

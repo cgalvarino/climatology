@@ -358,15 +358,15 @@ function query() {
     var geom = siteQuery.geometry.clone().transform(proj3857,proj4326);
     reqs = [
       {
-        getObs : catalog['sites'][siteQuery.attributes.group][siteQuery.attributes.name].getObs(
+        getObs       : catalog['sites'][siteQuery.attributes.group][siteQuery.attributes.name].getObs(
            $('#vars .active').text()
           ,catalog.years[0]
           ,catalog.years[catalog.years.length - 1]
         ) 
-        ,title : $('#vars .active').text() + ' from ' + siteQuery.attributes.name
-        ,id : 'obs'
+        ,title       : $('#vars .active').text() + ' from ' + siteQuery.attributes.name
+        ,id          : 'obs'
         ,postProcess : true
-        ,year : $('#years .active').text()
+        ,year        : $('#years .active').text()
         ,avgInterval : $('#averages .active').text()
       }
     ];
@@ -375,19 +375,19 @@ function query() {
     var geom = queryPt.clone().transform(proj3857,proj4326);
     reqs = [
       {
-        getObs : catalog['models']['SABGOM'].getObs(
+        getObs       : catalog['models']['SABGOM'].getObs(
            $('#vars .active').text()
           ,$('#years .active').text()
           ,$('#averages .active').text()
           ,geom.x
           ,geom.y
         )
-        ,title : $('#years .active').text() + ' ' + $('#vars .active').text() + ' from SABGOM'
-        ,id    : 'obs'
+        ,title       : $('#years .active').text() + ' ' + $('#vars .active').text() + ' from SABGOM'
+        ,id          : 'obs'
         ,avgInterval : $('#averages .active').text()
       }
       ,{
-        getObs : catalog['models']['SABGOM'].getObs(
+        getObs       : catalog['models']['SABGOM'].getObs(
            $('#vars .active').text()
           ,false
           ,$('#averages .active').text()
@@ -395,13 +395,13 @@ function query() {
           ,geom.y
           ,'min'
         )
-        ,title : 'Minimum ' + $('#vars .active').text() + ' from SABGOM'
-        ,year  : $('#years .active').text()
-        ,id    : 'min'
+        ,title       : 'Minimum ' + $('#vars .active').text() + ' from SABGOM'
+        ,year        : $('#years .active').text()
+        ,id          : 'min'
         ,avgInterval : $('#averages .active').text()
       }
       ,{
-        getObs : catalog['models']['SABGOM'].getObs(
+        getObs       : catalog['models']['SABGOM'].getObs(
            $('#vars .active').text()
           ,false
           ,$('#averages .active').text()
@@ -409,13 +409,13 @@ function query() {
           ,geom.y
           ,'max'
         )
-        ,title : 'Maximum ' + $('#vars .active').text() + ' from SABGOM'
-        ,year  : $('#years .active').text()
-        ,id    : 'max'
+        ,title       : 'Maximum ' + $('#vars .active').text() + ' from SABGOM'
+        ,year        : $('#years .active').text()
+        ,id          : 'max'
         ,avgInterval : $('#averages .active').text()
       }
       ,{
-        getObs : catalog['models']['SABGOM'].getObs(
+        getObs       : catalog['models']['SABGOM'].getObs(
            $('#vars .active').text()
           ,false
           ,$('#averages .active').text()
@@ -423,9 +423,9 @@ function query() {
           ,geom.y
           ,'avg'
         )
-        ,title : 'Average ' + $('#vars .active').text() + ' from SABGOM'
-        ,year  : $('#years .active').text()
-        ,id    : 'avg'
+        ,title       : 'Average ' + $('#vars .active').text() + ' from SABGOM'
+        ,year        : $('#years .active').text()
+        ,id          : 'avg'
         ,avgInterval : $('#averages .active').text()
       }
     ];
@@ -482,18 +482,19 @@ function postProcessData(d) {
     d.data[i][1] = Number(d.data[i][1]);
   }
 
-  // get everything in terms of a daily average
+  // get everything in terms of the avgInterval average
+  var format = d.avgInterval == 'Day' ? 'UTC:yyyy-mm-dd' : 'UTC:yyyy-mm';
   var vals = _.groupBy(d.data,function(o) {
-    return o[0].format('UTC:yyyy-mm-dd');
+    return o[0].format(format);
   });
   var sVals = {};
   for (o in vals) {
     sVals[o] = stats(vals[o]);
   }
 
-  var dailyAverages = [];
+  var averages = [];
   for (o in vals) {
-    dailyAverages.push([
+    averages.push([
        new Date(Date.UTC(vals[o][0][0].getUTCFullYear(),vals[o][0][0].getUTCMonth(),vals[o][0][0].getUTCDate()))
       ,sVals[o].avg
     ]);
@@ -502,13 +503,13 @@ function postProcessData(d) {
   // the in-situ data for the target year only
   var d0 = new Date(Date.UTC(d.year,0,1,0,0));
   var d1 = new Date(Date.UTC(d.year,11,31,23,59));
-  d.data = _.filter(dailyAverages,function(o) {
+  d.data = _.filter(averages,function(o) {
     return d0 <= o[0] && o[0] <= d1;
   });
 
   // start pulling out stats which means grouping data by mm/dd
-  vals = _.groupBy(dailyAverages,function(o) {
-    return d.year + '-' + o[0].format('UTC:mm-dd');
+  vals = _.groupBy(averages,function(o) {
+    return d.year + '-' + o[0].format(d.avgInterval == 'Day' ? 'UTC:mm-dd' : 'UTC:mm');
   });
   sVals = {};
   for (o in vals) {

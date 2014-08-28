@@ -260,12 +260,12 @@ function plot() {
 
     var minData = _.findWhere(plotData,{id : 'min'});
     minData.fillBetween = 'max';
-    minData.lines = {show : true,lineWidth : 1,fill : true,fillColor : 'rgba(237,194,64,0.20)'};
+    minData.lines = {show : true,lineWidth : 0,fill : true,fillColor : '#ffff99'};
     minData.data = insertBreaks(minData.data,obsData.avgInterval);
     minData.breaksInserted = true;
 
     var maxData = _.findWhere(plotData,{id : 'max'});
-    maxData.lines  = {show : true,lineWidth : 1};
+    maxData.lines = {show : true,lineWidth : 0};
     maxData.data = insertBreaks(maxData.data,obsData.avgInterval);
     maxData.breaksInserted = true;
 
@@ -287,11 +287,11 @@ function plot() {
         ,yaxes     : [{position : 'left',axisLabel : obsData ? obsData.uom : ''}]
         ,crosshair : {mode  : 'x'   }
         ,grid      : {
-           backgroundColor : {colors : ['#fff','#C3DFE5']}
+           backgroundColor : '#C3DFE5'
           ,borderWidth     : 1
           ,borderColor     : '#A6D1DB'
           ,hoverable       : true
-        }
+        } 
         ,zoom      : {interactive : true}
         ,pan       : {interactive : true}
         ,legend    : {
@@ -309,7 +309,7 @@ function plot() {
           }
         }
         // repeat 1st color to get outer edges of filled area the same color
-        ,colors : ['rgba(237,194,64,0.50)','rgba(237,194,64,0.50)',"#afd8f8","#cb4b4b","#4da74d","#9440ed"]
+        ,colors : ['#fffff0','#fffff0',"#00c900","#cb4b4b"]
       }
     ); 
     hideSpinner();

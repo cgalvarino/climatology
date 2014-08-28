@@ -244,7 +244,7 @@ function init() {
   lyrQuery.addFeatures([f.clone()]);
   map.setCenter([f.geometry.x,f.geometry.y],5);
 
-  // query();
+  query();
 }
 
 function plot() {
@@ -253,24 +253,18 @@ function plot() {
   });
   if (plotData.length == 4 && !_.findWhere(plotData,{breaksInserted : true})) {
     var obsData = _.findWhere(plotData,{id : 'obs'});
-    if (obsData) {
-      obsData.lines = {show : true,lineWidth : 3}; 
-    }
+    obsData.lines = {show : true,lineWidth : 3}; 
     obsData.data = insertBreaks(obsData.data,obsData.avgInterval);
     obsData.breaksInserted = true;
 
     var minData = _.findWhere(plotData,{id : 'min'});
-    if (minData) {
-      minData.fillBetween = 'max';
-      minData.lines = {show : true,lineWidth : 1,fill : true,fillColor : 'rgba(237,194,64,0.20)'};
-    }
+    minData.fillBetween = 'max';
+    minData.lines = {show : true,lineWidth : 1,fill : true,fillColor : 'rgba(237,194,64,0.20)'};
     minData.data = insertBreaks(minData.data,obsData.avgInterval);
     minData.breaksInserted = true;
 
     var maxData = _.findWhere(plotData,{id : 'max'});
-    if (maxData) {
-      maxData.lines  = {show : true,lineWidth : 1};
-    }
+    maxData.lines  = {show : true,lineWidth : 1};
     maxData.data = insertBreaks(maxData.data,obsData.avgInterval);
     maxData.breaksInserted = true;
 
@@ -299,7 +293,7 @@ function plot() {
         ,pan       : {interactive : true}
         ,legend    : {
            backgroundOpacity : 0.3
-          ,labelFormatter: function(label,series) {
+          ,labelFormatter    : function(label,series) {
             return /min|max/.test(series.id) ? null : label;
           }
         }
@@ -454,7 +448,7 @@ function query() {
           ,postProcess : reqs[i].postProcess
           ,avgInterval : reqs[i].avgInterval
           ,success     : function(r) {
-            var data = processData($(r),this.url,this.title,this.year,this.v);
+            var data = processData($(r),this.title,this.year,this.v);
             data[0].id = this.id;
             data[0].avgInterval = this.avgInterval;
             if (this.postProcess) {
@@ -476,7 +470,7 @@ function postProcessData(d) {
   d.data = _.filter(d.data,function(o) {
     return o[0].format('UTC:mmdd') != '0229';
   });
-  d.label = '&nbsp;<a target=_blank href=\'' + d.url + '\'>' + d.year + ' ' + d.title + ' (' + d.uom + ')' + '</a>';
+  d.label = '&nbsp;' + d.year + ' ' + d.title + ' (' + d.uom + ')';
 
   for (var i = 0; i < d.data.length; i++) {
     d.data[i][1] = Number(d.data[i][1]);
@@ -519,7 +513,7 @@ function postProcessData(d) {
   var dAvg = {
      id    : 'avg'
     ,uom   : d.uom
-    ,label : '&nbsp;<a target=_blank href=\'' + d.url + '\'>Average ' + d.title + ' (' + d.uom + ')' + '</a>'
+    ,label : '&nbsp;Average ' + d.title + ' (' + d.uom + ')'
     ,data  : []
     ,avgInterval : d.avgInterval
   };
@@ -567,10 +561,9 @@ function postProcessData(d) {
   return [d,dAvg,dMin,dMax];
 }
 
-function processData($xml,url,title,year,v) {
+function processData($xml,title,year,v) {
   var d = {
-     url   : url
-    ,title : title
+     title : title
     ,year  : year
     ,data  : []
   };
@@ -588,13 +581,13 @@ function processData($xml,url,title,year,v) {
          isoDateToDate(t)
         ,point.find('[name=' + v + ']').text()
       ]);
-      d.label = '&nbsp;<a target=_blank href=\'' + url + '\'>' + title + ' (' + d.uom + ')' + '</a>';
+      d.label = '&nbsp;' + title + ' (' + d.uom + ')';
     });
   }
   else { // ncSOS response
     d.uom   = $xml.find('uom[code],swe\\:uom[code]').attr('code');
     var nil = [$xml.find('nilValue,swe\\:nilValue').text()];
-    d.label = '&nbsp;<a target=_blank href=\'' + url + '\'>' + title + ' (' + d.uom + ')' + '</a>';
+    d.label = '&nbsp;' + title + ' (' + d.uom + ')';
     _.each($xml.find('values,swe\\:values').text().split(" "),function(o) {
       var a = o.split(',');
       if ((a.length == 2) && $.isNumeric(a[1]) && nil.indexOf(a[1]) < 0) {

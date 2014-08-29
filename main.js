@@ -192,7 +192,7 @@ function init() {
 
   $('.selectpicker').selectpicker({width : 200});
 
-  resize();
+  resizeAll();
 
   var style = new OpenLayers.Style(
     OpenLayers.Util.applyDefaults({
@@ -314,6 +314,7 @@ function plot() {
       }
     ); 
     hideSpinner();
+    resizeMap();
   }
 
   if (plotData.length == 4) {
@@ -783,13 +784,21 @@ Date.prototype.getDOY = function() {
   return Math.ceil((this - onejan) / 86400000);
 }
 
-function resize() {
-  var offset = 150;
-  $('#time-series-graph').height($(window).height() - offset);
-  offset = 51;
+function resizeMap() {
+  var offset = plotData.length == 0 ? 51 : 73;
+  // Thank you, IE, for making this difficult.
+  if (!!navigator.userAgent.match(/Trident\/7\./)) {
+    offset = plotData.length == 0 ? 52 : 76;
+  }
   $('#map').height($('#time-series-graph').height() - $('#vars').height() - $('#years').height() - $('#averages').height() - $($('.bootstrap-select')[0]).height() - offset);
   map && map.updateSize();
+}
+
+function resizeAll() {
+  var offset = 150;
+  $('#time-series-graph').height($(window).height() - offset);
+  resizeMap();
   plot();
 }
 
-window.onresize = resize;
+window.onresize = resizeAll;

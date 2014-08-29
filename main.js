@@ -318,7 +318,7 @@ function plot() {
   if (plotData.length == 4) {
     $('#summary').html('The data in the above graph was taken from ' + obsData.descr.name + '.  It has a reporting frequency of ' + obsData.descr.freq + '.');
     initDataTable([],[{title : 'a'},{title : 'b'},{title : 'c'},{title : 'd'},{title : 'e'}]);
-    prepareDownload();
+    // prepareDownload();
     $('#dataTable_wrapper').show();
   }
 }
@@ -519,7 +519,7 @@ function query() {
   }
   $('#legend').html(msg.join(''));
 
-  $.when(
+  setTimeout(function(){$.when(
     (function() {
       var a = [];
       for (var i = 0; i < reqs.length; i++) {
@@ -550,7 +550,7 @@ function query() {
       return a;
     })()
   ).done(function() {
-  });
+  })},100);;
 }
 
 function postProcessData(d) {
@@ -770,7 +770,7 @@ Date.prototype.getDOY = function() {
 }
 
 function resize() {
-  var offset = 140;
+  var offset = 150;
   $('#time-series-graph').height($(window).height() - offset);
   offset = 51;
   $('#map').height($('#time-series-graph').height() - $('#vars').height() - $('#years').height() - $('#averages').height() - $($('.bootstrap-select')[0]).height() - offset);

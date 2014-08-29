@@ -86,3 +86,9 @@ body {
 #coords .form-horizontal .control-label {
     text-align: left;
 }
+
+div.dataTables_wrapper { clear: both;position: absolute;top : 0}
+
+#dataTable {
+  display: none;
+}

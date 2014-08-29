@@ -8,10 +8,6 @@ var proj3857 = new OpenLayers.Projection("EPSG:3857");
 var proj4326 = new OpenLayers.Projection("EPSG:4326");
 
 function init() {
-  $('#download').click(function() {
-    downloadData();
-  });
-
   $('#coords .btn-default').on('click',function() {
     $('#location').selectpicker('val','custom');
     $('#coords').modal('hide');
@@ -322,18 +318,18 @@ function plot() {
   if (plotData.length == 4) {
     console.dir(obsData.descr);
     $('#summary').html('The data in the above graph was taken from ' + obsData.descr.name + '.  It has a reporting frequency of ' + obsData.descr.freq + '.');
-    $('#download').show();
+    prepareDownload();
+    $('#dataTable_wrapper').show();
   }
 }
 
-function downloadData() {
+function prepareDownload() {
   // Get a list of all dates (dates may vary by line).
   var dates = [];
-  var rows  = [['Date']];
+  var cols  = [{title : 'Date'}];
   var format;
-  for (var i = 0; i < plotData.length; i++) {
-    var hdr = plotData[i].label + ' ' + plotData[i].uom;
-    rows[0].push(hdr.replace('&nbsp;','').replace(/ /g,'_'));
+  for (var i = plotData.length - 1; i >= 0; i--) {
+    cols.push({title : plotData[i].title ? plotData[i].title  + ' ' + plotData[i].uom : plotData[i].id});
     dates = dates.concat(_.map(plotData[i].data,function(o){return o ? o[0].getTime() : false}));
   };
   dates = _.filter(_.uniq(dates),function(o){return o}).sort();
@@ -348,23 +344,39 @@ function downloadData() {
         if (!data[d]) {
           data[d] = [];
         }
-        data[d][i] = plotData[i].data[j][1];
+        data[d][i] = Math.round(plotData[i].data[j][1] * 100) / 100;
       }
     }
   }
 
+  var rows = [];
   _.each(data,function(v,k) {
+    for (var i = 0; i <= plotData.length; i++) {
+      if (_.isUndefined(v[i])) {
+        v[i] = null;
+      }
+    }
     rows.push([new Date(Number(k)).format(format)].concat(v));
   });
 
-  var csvString = rows.join("%0A");
-  var a         = document.createElement('a');
-  a.href        = 'data:attachment/csv,' + csvString;
-  a.target      = '_blank';
-  a.download    = 'data.csv';
+  initDataTable(rows,cols);
+}
 
-  document.body.appendChild(a);
-  a.click();
+function initDataTable(data,columns) {
+  $('#dataTable').dataTable({
+     dom        : 'T<"clear">lfrtip'
+    ,tableTools : {
+      sSwfPath : './lib/jquery/DataTables-1.10.2/extensions/TableTools/swf/copy_csv_xls_pdf.swf'
+      ,aButtons : [{sExtends : 'csv',sButtonText : 'Download Data'}]
+    }
+    ,data       : data
+    ,columns    : columns
+    ,searching  : false
+    ,info       : false
+    ,paging     : false
+    ,bDestroy   : true
+  });
+  // $('#ToolTables_dataTable_0').removeClass('btn-default').addClass('btn-custom-lighten active');
 }
 
 function showSpinner() {
@@ -492,7 +504,7 @@ function query() {
   plotData = [];
   $('#legend').empty();
   $('#summary').empty();
-  $('#download').hide();
+  $('#dataTable_wrapper').hide();
 
   var msg = [];
   for (var i = 0; i < reqs.length; i++) {
@@ -522,6 +534,7 @@ function query() {
             data[0].id          = this.id;
             data[0].avgInterval = this.avgInterval;
             data[0].descr       = this.descr;
+            data[0].v           = this.v;
             if (this.postProcess) {
               data = postProcessData(data[0]);
             }

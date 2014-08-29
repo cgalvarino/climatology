@@ -5,6 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SECOORA Climatology Query</title>
+    <link rel="stylesheet" type="text/css" href="./lib/jquery/DataTables-1.10.2/media/css/jquery.dataTables.min.css"/>
+    <link rel="stylesheet" type="text/css" href="./lib/jquery/DataTables-1.10.2/extensions/TableTools/css/dataTables.tableTools.min.css"/>
     <link rel="stylesheet" type="text/css" href="./lib/bootstrap-3.1.1-dist/css/bootstrap-select.css"/>
     <link rel="stylesheet" type="text/css" href="./lib/bootstrap-3.1.1-dist/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="./lib/jquery/validator/css/bootstrapValidator.min.css">
@@ -12,6 +14,9 @@
     <script type="text/javascript" src="./lib/OpenLayers-2.12-rc2-ie10-fix/OpenLayers.js"></script>
     <script type="text/javascript" src="./lib/dateFormat.js"></script>
     <script type="text/javascript" src="./lib/jquery/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="./lib/jquery/DataTables-1.10.2/media/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="./lib/jquery/DataTables-1.10.2/extensions/TableTools/js/dataTables.tableTools.js"></script>
+    <script type="text/javascript" src="./lib/jquery/DataTables-1.10.2/extensions/TableTools/js/dataTables.bootstrap.js"></script>
     <script type="text/javascript" src="./lib/spin.js"></script>
     <script type="text/javascript" src="./lib/jquery/jquery.flot.js"></script>
     <script type="text/javascript" src="./lib/jquery/jquery.flot.time.js"></script>
@@ -77,7 +82,7 @@
             </div>
             <div class="col-md-6">
               <div id="legend" class="pull-right"></div>
-              <button id="download" type="button" class="btn btn-custom-lighten active">Download Data</button>
+              <table id="dataTable"></table>
             </div>
           </div>
         </div>

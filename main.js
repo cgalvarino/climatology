@@ -316,8 +316,8 @@ function plot() {
   }
 
   if (plotData.length == 4) {
-    console.dir(obsData.descr);
     $('#summary').html('The data in the above graph was taken from ' + obsData.descr.name + '.  It has a reporting frequency of ' + obsData.descr.freq + '.');
+    initDataTable([],[{title : 'a'},{title : 'b'},{title : 'c'},{title : 'd'},{title : 'e'}]);
     prepareDownload();
     $('#dataTable_wrapper').show();
   }
@@ -367,7 +367,10 @@ function initDataTable(data,columns) {
      dom        : 'T<"clear">lfrtip'
     ,tableTools : {
       sSwfPath : './lib/jquery/DataTables-1.10.2/extensions/TableTools/swf/copy_csv_xls_pdf.swf'
-      ,aButtons : [{sExtends : 'csv',sButtonText : 'Download Data'}]
+      ,aButtons : [{
+         sExtends : 'csv'
+        ,sButtonText : 'Download Data'
+      }]
     }
     ,data       : data
     ,columns    : columns
@@ -375,6 +378,7 @@ function initDataTable(data,columns) {
     ,info       : false
     ,paging     : false
     ,bDestroy   : true
+    ,deferRender : true
   });
   // $('#ToolTables_dataTable_0').removeClass('btn-default').addClass('btn-custom-lighten active');
 }
@@ -766,7 +770,9 @@ Date.prototype.getDOY = function() {
 }
 
 function resize() {
-  var offset = 51;
+  var offset = 140;
+  $('#time-series-graph').height($(window).height() - offset);
+  offset = 51;
   $('#map').height($('#time-series-graph').height() - $('#vars').height() - $('#years').height() - $('#averages').height() - $($('.bootstrap-select')[0]).height() - offset);
   map && map.updateSize();
   plot();

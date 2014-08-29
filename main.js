@@ -6,6 +6,7 @@ var map;
 var spinner;
 var proj3857 = new OpenLayers.Projection("EPSG:3857");
 var proj4326 = new OpenLayers.Projection("EPSG:4326");
+var dataTable;
 
 function init() {
   $('#coords .btn-default').on('click',function() {
@@ -318,7 +319,6 @@ function plot() {
   if (plotData.length == 4) {
     $('#summary').html('The data in the above graph was taken from ' + obsData.descr.name + '.  It has a reporting frequency of ' + obsData.descr.freq + '.');
     initDataTable([],[{title : 'a'},{title : 'b'},{title : 'c'},{title : 'd'},{title : 'e'}]);
-    // prepareDownload();
     $('#dataTable_wrapper').show();
   }
 }
@@ -326,10 +326,10 @@ function plot() {
 function prepareDownload() {
   // Get a list of all dates (dates may vary by line).
   var dates = [];
-  var cols  = [{title : 'Date'}];
+  var cols  = ['Date'];
   var format;
   for (var i = plotData.length - 1; i >= 0; i--) {
-    cols.push({title : plotData[i].title ? plotData[i].title  + ' ' + plotData[i].uom : plotData[i].id});
+    cols.push(plotData[i].title ? plotData[i].title  + ' ' + plotData[i].uom : plotData[i].id);
     dates = dates.concat(_.map(plotData[i].data,function(o){return o ? o[0].getTime() : false}));
   };
   dates = _.filter(_.uniq(dates),function(o){return o}).sort();
@@ -359,28 +359,42 @@ function prepareDownload() {
     rows.push([new Date(Number(k)).format(format)].concat(v));
   });
 
-  initDataTable(rows,cols);
+  dataTable.fnClearTable();
+  dataTable.fnAddData(rows);
+  return cols;
 }
 
 function initDataTable(data,columns) {
-  $('#dataTable').dataTable({
+  dataTable = $('#dataTable').dataTable({
      dom        : 'T<"clear">lfrtip'
     ,tableTools : {
-      sSwfPath : './lib/jquery/DataTables-1.10.2/extensions/TableTools/swf/copy_csv_xls_pdf.swf'
+       sSwfPath : './lib/jquery/DataTables-1.10.2/extensions/TableTools/swf/copy_csv_xls_pdf.swf'
       ,aButtons : [{
-         sExtends : 'csv'
+         sExtends    : 'csv'
         ,sButtonText : 'Download Data'
+        ,fnClick     : function ( nButton, oConfig, oFlash ) {
+          var cols = prepareDownload();
+          // swap out the column headers for the real thing
+          for (var i = 0; i < cols.length; i++) {
+            cols[i] = '"' + cols[i].replace(/"/g,'_') + '"';
+          }
+          var br = navigator.userAgent.match(/Windows/) ? "\r\n" : "\n";
+          var d  = this.fnGetTableData(oConfig).split(br);
+          d.shift();
+          d.unshift(cols.join(','));
+          this.fnSetText(oFlash,d.join(br));
+        }
       }]
     }
-    ,data       : data
-    ,columns    : columns
-    ,searching  : false
-    ,info       : false
-    ,paging     : false
-    ,bDestroy   : true
+    ,data        : data
+    ,columns     : columns
+    ,searching   : false
+    ,info        : false
+    ,paging      : false
+    ,bDestroy    : true
     ,deferRender : true
   });
-  // $('#ToolTables_dataTable_0').removeClass('btn-default').addClass('btn-custom-lighten active');
+  $('#ToolTables_dataTable_0').removeClass('btn-default').addClass('btn-custom-lighten active');
 }
 
 function showSpinner() {

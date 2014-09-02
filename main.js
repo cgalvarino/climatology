@@ -795,7 +795,7 @@ function resizeMap() {
 }
 
 function resizeAll() {
-  var offset = 150;
+  var offset = 300;
   $('#time-series-graph').height($(window).height() - offset);
   resizeMap();
   plot();

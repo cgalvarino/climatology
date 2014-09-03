@@ -310,7 +310,7 @@ function plot() {
           }
         }
         // repeat 1st color to get outer edges of filled area the same color
-        ,colors : ['#fffff0','#fffff0',"#00c900","#cb4b4b"]
+        ,colors : ['#ffff00','#ffff00',"#00c900","#cb4b4b"]
       }
     ); 
     hideSpinner();

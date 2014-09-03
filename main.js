@@ -723,9 +723,9 @@ function stats(data) {
     }
   });
   return {
-     avg : c > 0 ? t / c : null
-    ,min : !_.isUndefined(min) ? min : [null,null]
-    ,max : !_.isUndefined(max) ? max : [null,null]
+     avg : c > 1 ? t / c : null
+    ,min : !_.isUndefined(min) && c > 1 ? min : [null,null]
+    ,max : !_.isUndefined(max) && c > 1 ? max : [null,null]
   };
 }
 
@@ -791,7 +791,7 @@ Date.prototype.getDOY = function() {
 function resizeMap() {
   var offset = plotData.length == 0 ? 51 : 73;
   // Thank you, IE, for making this difficult.
-  if (!!navigator.userAgent.match(/Trident\/7\./)) {
+  if (!navigator.userAgent.match(/Trident\/7\./)) {
     offset = plotData.length == 0 ? 52 : 76;
   }
   $('#map').height($('#time-series-graph').height() - $('#vars').height() - $('#years').height() - $('#averages').height() - $($('.bootstrap-select')[0]).height() - offset);

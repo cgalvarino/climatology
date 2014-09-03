@@ -299,7 +299,7 @@ function plot() {
            container         : $('#legend')
           ,labelFormatter    : function(label,series) {
             if (series.id == 'min') {
-              return label.replace(/Minimum/,'Min - Max');
+              return label.replace(/Minimum/,'Min-Max');
             }
             else if (series.id == 'max') {
               return null;

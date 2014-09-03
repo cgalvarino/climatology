@@ -113,7 +113,7 @@ var catalog = {
         };
       }
       ,'wkt' : ''
-      ,'descr' : {name : 'the SABGOM forecasting model',freq : 'once every three hours and a grid size of 1km'}
+      ,'descr' : {name : 'the SABGOM forecasting model',freq : 'once every three hours and a grid size of 5km'}
     }
   }
 };

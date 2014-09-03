@@ -321,6 +321,8 @@ function plot() {
     $('#summary').html('The data in the above graph was taken from ' + obsData.descr.name + '.  It has a reporting frequency of ' + obsData.descr.freq + '.');
     initDataTable([],[{title : 'a'},{title : 'b'},{title : 'c'},{title : 'd'},{title : 'e'}]);
     $('#dataTable_wrapper').show();
+    // flip the legend order
+    $($('#legend tr').get().reverse()).each(function(){$(this).appendTo($(this).parent())});
   }
 }
 
@@ -484,7 +486,7 @@ function query() {
           ,geom.y
           ,'min'
         )
-        ,title       : 'Minimum ' + $('#vars .active').text() + ' from SABGOM'
+        ,title       : catalog.years[0] + '-' + catalog.years[catalog.years.length - 1] + ' Minimum ' + $('#vars .active').text() + ' from SABGOM'
         ,year        : $('#years .active').text()
         ,id          : 'min'
         ,avgInterval : $('#averages .active').text()
@@ -498,7 +500,7 @@ function query() {
           ,geom.y
           ,'max'
         )
-        ,title       : 'Maximum ' + $('#vars .active').text() + ' from SABGOM'
+        ,title       : catalog.years[0] + '-' + catalog.years[catalog.years.length - 1] + ' Maximum ' + $('#vars .active').text() + ' from SABGOM'
         ,year        : $('#years .active').text()
         ,id          : 'max'
         ,avgInterval : $('#averages .active').text()
@@ -512,7 +514,7 @@ function query() {
           ,geom.y
           ,'avg'
         )
-        ,title       : 'Average ' + $('#vars .active').text() + ' from SABGOM'
+        ,title       : catalog.years[0] + '-' + catalog.years[catalog.years.length - 1] + ' Average ' + $('#vars .active').text() + ' from SABGOM'
         ,year        : $('#years .active').text()
         ,id          : 'avg'
         ,avgInterval : $('#averages .active').text()
@@ -541,6 +543,7 @@ function query() {
         a.push($.ajax({
            url         : reqs[i].getObs.u
           ,v           : reqs[i].getObs.v
+          ,y           : reqs[i].getObs.y
           ,dataType    : 'xml'
           ,title       : reqs[i].title
           ,year        : reqs[i].year
@@ -554,6 +557,7 @@ function query() {
             data[0].avgInterval = this.avgInterval;
             data[0].descr       = this.descr;
             data[0].v           = this.v;
+            data[0].y           = this.y;
             if (this.postProcess) {
               data = postProcessData(data[0]);
             }
@@ -616,7 +620,7 @@ function postProcessData(d) {
   var dAvg = {
      id    : 'avg'
     ,uom   : d.uom
-    ,label : '&nbsp;Average ' + d.title
+    ,label : '&nbsp;' + d.y[0] + '-' + d.y[1] + ' Average ' + d.title
     ,data  : []
     ,avgInterval : d.avgInterval
   };
@@ -631,7 +635,7 @@ function postProcessData(d) {
   var dMin = {
      id    : 'min'
     ,uom   : d.uom
-    ,label : '&nbsp;Minimum ' + d.title
+    ,label : '&nbsp;' + d.y[0] + '-' + d.y[1] + ' Minimum ' + d.title
     ,data  : []
     ,avgInterval : d.avgInterval
   };
@@ -648,7 +652,7 @@ function postProcessData(d) {
   var dMax = {
      id    : 'max'
     ,uom   : d.uom
-    ,label : '&nbsp;Maximum ' + d.title
+    ,label : '&nbsp;' + d.y[0] + '-' + d.y[1] + ' Maximum ' + d.title
     ,data  : []
     ,avgInterval : d.avgInterval
   };

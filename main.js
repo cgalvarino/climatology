@@ -791,7 +791,7 @@ Date.prototype.getDOY = function() {
 function resizeMap() {
   var offset = plotData.length == 0 ? 51 : 73;
   // Thank you, IE, for making this difficult.
-  if (!navigator.userAgent.match(/Trident\/7\./)) {
+  if (navigator.userAgent.match(/Trident\/7\./)) {
     offset = plotData.length == 0 ? 52 : 76;
   }
   $('#map').height($('#time-series-graph').height() - $('#vars').height() - $('#years').height() - $('#averages').height() - $($('.bootstrap-select')[0]).height() - offset);

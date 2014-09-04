@@ -59,7 +59,7 @@ var catalog = {
             ,y : [year0,year1]
           };
         }
-        ,'descr' : {name : 'the C10 buoy, part of the COMPS network',freq : 'one observation per hour'}
+        ,'descr' : {name : 'the C10 buoy, part of the COMPS network',freq : 'three observations per hour which are averaged.  This hourly average is being used to populate the graph.'}
       }
       ,'C12' : {
         'wkt' : 'POINT(-83.721 27.498)'
@@ -73,7 +73,7 @@ var catalog = {
             ,y : [year0,year1]
           };
         }
-        ,'descr' : {name : 'the C12 buoy, part of the COMPS network',freq : 'one observation per hour'}
+        ,'descr' : {name : 'the C12 buoy, part of the COMPS network',freq : 'three observations per hour which are averaged.  This hourly average is being used to populate the graph.'}
       }
       ,'C13' : {
         'wkt' : 'POINT(-83.073 26.063)'
@@ -87,7 +87,7 @@ var catalog = {
             ,y : [year0,year1]
           };
         }
-        ,'descr' : {name : 'the C13 buoy, part of the COMPS network',freq : 'one observation per hour'}
+        ,'descr' : {name : 'the C13 buoy, part of the COMPS network',freq : 'three observations per hour which are averaged.  This hourly average is being used to populate the graph.'}
       }
     }
   }

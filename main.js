@@ -105,7 +105,6 @@ function init() {
     $(this).blur();
     var selVal = $(this).data('value');
     $('#map').fadeTo(500,selVal == 'Model' ? 1 : 0.5);
-    $('#mapDirections').html(selVal == 'Model' ? 'Select a buoy or custom location from the above list or click anywhere on the map.' : 'Select a buoy from the above list.');
     $('#sources button').each(function() {
       if ($(this).data('value') == selVal) {
         $(this).removeClass('btn-default').addClass('btn-custom-lighten').addClass('active');
@@ -149,7 +148,6 @@ function init() {
     $('#location optgroup[label="Custom"]').prop('disabled',true);
     $('#location').selectpicker('refresh');
     $('#map').fadeTo(0,0.5);
-    $('#mapDirections').html('Select a buoy from the above list.');
   }
 
   $('#location').change(function() {
@@ -829,18 +827,13 @@ Date.prototype.getDOY = function() {
 }
 
 function resizeMap() {
-  var offset = plotData.length == 0 ? 2 : 24;
-  // Thank you, IE, for making this difficult.
-  if (navigator.userAgent.match(/Trident\/7\./)) {
-    offset = plotData.length == 0 ? 3 : 27;
-  }
-  $('#map').height($('#time-series-graph').height() - $('#vars').height() - $('#years').height() - $('#averages').height() - $('#sources').height() - offset);
+  $('#map').height($(window).height() - $('#title').height() - $('#locations').position().top - $('#map').position().top - 40);
   map && map.updateSize();
 }
 
 function resizeAll() {
-  var offset = 300;
-  $('#time-series-graph').height($(window).height() - offset);
+  $('#resultsWrapper').height($(window).height() - $('#title').height() - $('#resultsWrapper').position().top - 24);
+  $('#time-series-graph').height($('#resultsWrapper').height() - $('#time-series-graph').position().top + $('#resultsWrapper').position().top - 120);
   resizeMap();
   plot();
 }

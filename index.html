@@ -44,17 +44,39 @@
   <body onload="init()">
     <div class="container-fluid">
       <div class="row">
-        <div id="title" class="col-md-12">
-          <h3 class="text-center">SECOORA Climatology</h3>
+        <div id="title" class="col-md-9">
+          <h3>SECOORA CLIMATOLOGY</h3>
         </div>
-        <div id="intro" class="col-md-12">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla pretium, erat eu eleifend imperdiet, turpis lectus tempus sapien, ut feugiat mauris urna eu dolor. Curabitur nec lectus molestie purus rutrum aliquam. Duis pellentesque maximus convallis. Duis nisl dolor, convallis a consectetur viverra, dignissim ut orci. Integer eu semper justo. Nullam ex nulla, feugiat et consectetur aliquet, rhoncus ac leo. Maecenas suscipit lectus id tincidunt sodales. Nunc neque augue, consectetur sit amet nibh sed, placerat fermentum nulla. Nam id arcu id nisi scelerisque rhoncus et non metus. Nullam commodo tempus turpis eu laoreet. Sed eu rutrum nisi. Morbi sed congue arcu. Sed dictum molestie eros a pretium. Vestibulum quis eleifend tellus.
-          <br><br>
-        </div>
+      </div>
+      <div class="row">
         <div class="col-md-9" id="spinner">
-          <div id="time-series-graph"></div>
+          <div class="row">
+            <div class="col-md-12">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras accumsan lorem mauris, ultrices iaculis dui condimentum nec. Ut malesuada est eu tortor vestibulum, sed euismod orci malesuada. Fusce suscipit consequat nunc, in suscipit urna blandit vitae. Suspendisse sit amet sapien odio. Integer laoreet semper porta. Nulla imperdiet posuere rutrum. Proin varius nec tellus sit amet ornare. Suspendisse semper libero lectus, a varius sapien tempor vel. Aenean eu fermentum odio, ut pellentesque justo. Vestibulum in sem in risus mattis porttitor. Sed ac cursus tortor. Nunc accumsan neque sed libero rutrum suscipit. Mauris et risus vehicula, pellentesque felis ac, gravida est. Etiam vel feugiat turpis. Curabitur vel tortor in lorem tristique blandit vel at orci.
+              <br><br>
+              <div id="resultsWrapper" class="panel panel-default">
+                <div class="panel-heading">Results</div>
+                <div class="panel-body">
+                  <div id="time-series-graph"></div>
+                  <div class="row">
+                    <div class="col-md-12" id="footer">
+                      <div class="row">
+                        <div class="col-md-5">
+                          <div id="summary"></div>
+                        </div>
+                        <div class="col-md-7">
+                          <div id="legend" class="pull-right"></div>
+                          <table id="dataTable"></table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="col-md-3">
+        <div id="controls" class="col-md-3">
           <div class="row">
             <div id="vars" class="col-md-12">
               <div class="panel panel-default">
@@ -80,13 +102,10 @@
                 <div class="panel-body"></div>
               </div>
             </div>
-            <div class="col-md-12">
+            <div id="locations" class="col-md-12">
               <div class="panel panel-default">
                 <div class="panel-heading">Location</div>
                 <div class="panel-body">
-                  <div id="mapDirections">
-                    Select a buoy or custom location or click anywhere on the map.
-                  </div>
                   <select id="location" name="location" class="selectpicker" data-style="btn-custom-lighten active" data-header="Select a location">
                     <optgroup label="Custom">
                       <option value="custom">Custom point on map</option>
@@ -96,17 +115,6 @@
                   <div id="map"></div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-9" id="footer">
-          <div class="row">
-            <div class="col-md-5">
-              <div id="summary"></div>
-            </div>
-            <div class="col-md-7">
-              <div id="legend" class="pull-right"></div>
-              <table id="dataTable"></table>
             </div>
           </div>
         </div>

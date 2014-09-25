@@ -4,6 +4,10 @@ body {
   overflow-x: hidden;
 }
 
+#title {
+  text-align: center;
+}
+
 #time-series-graph {
   height: 550px;
 }

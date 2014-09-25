@@ -123,4 +123,5 @@ var defaults = {
   ,'var'  : 'Temperature'
   ,'site' : 'C10'
   ,'avg'  : 'Day'
+  ,'src'  : 'Buoy'
 };

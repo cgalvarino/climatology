@@ -44,7 +44,7 @@ function init() {
   });
 
   _.each(catalog.variables.sort(),function(o) {
-    $('#vars').after($('</h4>')).append('<button type="button" data-value="' + o + '" class="btn btn-default">' + o + '</button> ');
+    $('#vars h4').after('<button type="button" data-value="' + o + '" class="btn btn-default">' + o + '</button> ');
   });
   $('#vars [data-value="' + defaults.var + '"]').removeClass('btn-default').addClass('btn-custom-lighten active');
   $('#vars button').click(function() {
@@ -62,7 +62,7 @@ function init() {
   });
 
   _.each(catalog.years.sort(),function(o) {
-    $('#years').after($('</h4>')).append('<button type="button" data-value="' + o + '" class="btn btn-default">' + o + '</button> ');
+    $('#years h4').after('<button type="button" data-value="' + o + '" class="btn btn-default">' + o + '</button> ');
   });
   $('#years [data-value="' + defaults.year + '"]').removeClass('btn-default').addClass('btn-custom-lighten active');
   $('#years button').click(function() {
@@ -80,7 +80,7 @@ function init() {
   });
 
   _.each(['Day','Month'],function(o) {
-    $('#averages').after($('</h4>')).append('<button type="button" data-value="' + o + '" class="btn btn-default">' + o + '</button> ');
+    $('#averages h4').after('<button type="button" data-value="' + o + '" class="btn btn-default">' + o + '</button> ');
   });
   $('#averages [data-value="' + defaults.avg + '"]').removeClass('btn-default').addClass('btn-custom-lighten active');
   $('#averages button').click(function() {
@@ -95,6 +95,36 @@ function init() {
       }
     });
     query();
+  });
+
+  _.each(['Model','Buoy'],function(o) {
+    $('#sources h4').after('<button type="button" data-value="' + o + '" class="btn btn-default">' + o + '</button> ');
+  });
+  $('#sources [data-value="' + defaults.src + '"]').removeClass('btn-default').addClass('btn-custom-lighten active');
+  $('#sources button').click(function() {
+    $(this).blur();
+    var selVal = $(this).data('value');
+    $('#map').fadeTo(500,selVal == 'Model' ? 1 : 0.5);
+    $('#mapDirections').html(selVal == 'Model' ? 'Select a buoy or custom location from the above list or click anywhere on the map.' : 'Select a buoy from the above list.');
+    $('#sources button').each(function() {
+      if ($(this).data('value') == selVal) {
+        $(this).removeClass('btn-default').addClass('btn-custom-lighten').addClass('active');
+      }
+      else {
+        $(this).removeClass('btn-custom-lighten').removeClass('active').addClass('btn-default');
+      }
+    });
+    $('#location optgroup[label="Custom"]').prop('disabled',selVal == 'Buoy');
+    // We will need to select a default buoy if the current location isn't a buoy (null).
+    if (selVal == 'Buoy' && _.isNull($('#location').selectpicker('val'))) {
+      $('#location').selectpicker('val',$('#location option[value!="custom"][value!="manual"]').first().val());
+      $('#location').selectpicker('refresh');
+      $('#location').trigger('change');
+    }
+    else {
+      $('#location').selectpicker('refresh');
+      query();
+    }
   });
 
   var wkt = new OpenLayers.Format.WKT();
@@ -114,6 +144,13 @@ function init() {
     });
     i++;
   });
+
+  if (defaults.src == 'Buoy') {
+    $('#location optgroup[label="Custom"]').prop('disabled',true);
+    $('#location').selectpicker('refresh');
+    $('#map').fadeTo(0,0.5);
+    $('#mapDirections').html('Select a buoy from the above list.');
+  }
 
   $('#location').change(function() {
     $(this).blur();
@@ -229,6 +266,9 @@ function init() {
   });
 
   map.events.register('click',this,function(e) {
+    if ($('#sources .active').first().data('value') != 'Model') {
+      return;
+    }
     lyrQuery.removeAllFeatures();
     var lonLat = map.getLonLatFromPixel(e.xy);
     var f = new OpenLayers.Feature.Vector(
@@ -318,7 +358,7 @@ function plot() {
   }
 
   if (plotData.length == 4) {
-    $('#summary').html('The data in the above graph was taken from ' + obsData.descr.name + '.  It has a reporting frequency of ' + obsData.descr.freq + '.');
+    $('#summary').html('The data in the above graph was taken from <b>' + obsData.descr.name + '</b>.  It has a reporting frequency of ' + obsData.descr.freq + '.');
     initDataTable([],[{title : 'a'},{title : 'b'},{title : 'c'},{title : 'd'},{title : 'e'}]);
     $('#dataTable_wrapper').show();
     // flip the legend order
@@ -438,7 +478,7 @@ function query() {
 
   // Find the 1st hit in the catalog that is closest to the query point.
   var queryPt = lyrQuery.features[0].geometry;
-  var siteQuery = _.find(lyrCatalog.features,function(f) {
+  var siteQuery = $('#sources .active').first().data('value') == 'Buoy' && _.find(lyrCatalog.features,function(f) {
     return f.geometry.distanceTo(queryPt) == 0;
   });
   var reqs = [];
@@ -789,12 +829,12 @@ Date.prototype.getDOY = function() {
 }
 
 function resizeMap() {
-  var offset = plotData.length == 0 ? 51 : 73;
+  var offset = plotData.length == 0 ? 2 : 24;
   // Thank you, IE, for making this difficult.
   if (navigator.userAgent.match(/Trident\/7\./)) {
-    offset = plotData.length == 0 ? 52 : 76;
+    offset = plotData.length == 0 ? 3 : 27;
   }
-  $('#map').height($('#time-series-graph').height() - $('#vars').height() - $('#years').height() - $('#averages').height() - $($('.bootstrap-select')[0]).height() - offset);
+  $('#map').height($('#time-series-graph').height() - $('#vars').height() - $('#years').height() - $('#averages').height() - $('#sources').height() - offset);
   map && map.updateSize();
 }
 

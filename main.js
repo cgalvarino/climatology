@@ -44,7 +44,7 @@ function init() {
   });
 
   _.each(catalog.variables.sort(),function(o) {
-    $('#vars h4').after('<button type="button" data-value="' + o + '" class="btn btn-default">' + o + '</button> ');
+    $('#vars .panel-body').append('<button type="button" data-value="' + o + '" class="btn btn-default">' + o + '</button> ');
   });
   $('#vars [data-value="' + defaults.var + '"]').removeClass('btn-default').addClass('btn-custom-lighten active');
   $('#vars button').click(function() {
@@ -62,7 +62,7 @@ function init() {
   });
 
   _.each(catalog.years.sort(),function(o) {
-    $('#years h4').after('<button type="button" data-value="' + o + '" class="btn btn-default">' + o + '</button> ');
+    $('#years .panel-body').append('<button type="button" data-value="' + o + '" class="btn btn-default">' + o + '</button> ');
   });
   $('#years [data-value="' + defaults.year + '"]').removeClass('btn-default').addClass('btn-custom-lighten active');
   $('#years button').click(function() {
@@ -80,7 +80,7 @@ function init() {
   });
 
   _.each(['Day','Month'],function(o) {
-    $('#averages h4').after('<button type="button" data-value="' + o + '" class="btn btn-default">' + o + '</button> ');
+    $('#averages .panel-body').append('<button type="button" data-value="' + o + '" class="btn btn-default">' + o + '</button> ');
   });
   $('#averages [data-value="' + defaults.avg + '"]').removeClass('btn-default').addClass('btn-custom-lighten active');
   $('#averages button').click(function() {
@@ -97,8 +97,8 @@ function init() {
     query();
   });
 
-  _.each(['Model','Buoy'],function(o) {
-    $('#sources h4').after('<button type="button" data-value="' + o + '" class="btn btn-default">' + o + '</button> ');
+  _.each(['Buoy','Model'],function(o) {
+    $('#sources .panel-body').append('<button type="button" data-value="' + o + '" class="btn btn-default">' + o + '</button> ');
   });
   $('#sources [data-value="' + defaults.src + '"]').removeClass('btn-default').addClass('btn-custom-lighten active');
   $('#sources button').click(function() {

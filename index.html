@@ -57,30 +57,45 @@
         <div class="col-md-3">
           <div class="row">
             <div id="vars" class="col-md-12">
-              <h4>Variable</h4>
+              <div class="panel panel-default">
+                <div class="panel-heading">Variable</div>
+                <div class="panel-body"></div>
+              </div>
             </div>
             <div id="years" class="col-md-12">
-              <h4>Year</h4>
+              <div class="panel panel-default">
+                <div class="panel-heading">Year</div>
+                <div class="panel-body"></div>
+              </div>
             </div>
             <div id="averages" class="col-md-12">
-              <h4>Average By</h4>
+              <div class="panel panel-default">
+                <div class="panel-heading">Average By</div>
+                <div class="panel-body"></div>
+              </div>
             </div>
             <div id="sources" class="col-md-12">
-              <h4>Data Source</h4>
-              <div id="locationWrapper">
-                <select id="location" name="location" class="selectpicker" data-style="btn-custom-lighten active" data-header="Select a location">
-                  <optgroup label="Custom">
-                    <option value="custom">Custom point on map</option>
-                    <option value="manual">Custom coordinates</option>
-                  </optgroup>
-                </select>
+              <div class="panel panel-default">
+                <div class="panel-heading">Data Source</div>
+                <div class="panel-body"></div>
               </div>
             </div>
             <div class="col-md-12">
-              <div id="map"></div>
-            </div>
-            <div id="mapDirections" class="col-md-12">
-              Select a buoy or custom location from the above list or click anywhere on the map.
+              <div class="panel panel-default">
+                <div class="panel-heading">Location</div>
+                <div class="panel-body">
+                  <div id="mapDirections">
+                    Select a buoy or custom location or click anywhere on the map.
+                  </div>
+                  <select id="location" name="location" class="selectpicker" data-style="btn-custom-lighten active" data-header="Select a location">
+                    <optgroup label="Custom">
+                      <option value="custom">Custom point on map</option>
+                      <option value="manual">Custom coordinates</option>
+                    </optgroup>
+                  </select>
+                  <div id="map"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

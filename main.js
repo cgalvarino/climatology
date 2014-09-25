@@ -469,7 +469,7 @@ function hideSpinner() {
 }
 
 function query() {
-  if (spinner) {
+  if (spinner || lyrQuery.features.length == 0) {
     return;
   }
   showSpinner();

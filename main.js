@@ -564,40 +564,35 @@ function query() {
   }
   $('#legend').html(msg.join(''));
 
-  setTimeout(function(){$.when(
-    (function() {
-      var a = [];
-      for (var i = 0; i < reqs.length; i++) {
-        a.push($.ajax({
-           url         : reqs[i].getObs.u
-          ,v           : reqs[i].getObs.v
-          ,y           : reqs[i].getObs.y
-          ,dataType    : 'xml'
-          ,title       : reqs[i].title
-          ,year        : reqs[i].year
-          ,id          : reqs[i].id
-          ,postProcess : reqs[i].postProcess
-          ,avgInterval : reqs[i].avgInterval
-          ,descr       : reqs[i].descr
-          ,success     : function(r) {
-            var data = processData($(r),this.title,this.year,this.v);
-            data[0].id          = this.id;
-            data[0].avgInterval = this.avgInterval;
-            data[0].descr       = this.descr;
-            data[0].v           = this.v;
-            data[0].y           = this.y;
-            if (this.postProcess) {
-              data = postProcessData(data[0]);
-            }
-            plotData = plotData.concat(data);
-            plot();
+  setTimeout(function() {
+    for (var i = 0; i < reqs.length; i++) {
+      $.ajax({
+         url         : reqs[i].getObs.u
+        ,v           : reqs[i].getObs.v
+        ,y           : reqs[i].getObs.y
+        ,dataType    : 'xml'
+        ,title       : reqs[i].title
+        ,year        : reqs[i].year
+        ,id          : reqs[i].id
+        ,postProcess : reqs[i].postProcess
+        ,avgInterval : reqs[i].avgInterval
+        ,descr       : reqs[i].descr
+        ,success     : function(r) {
+          var data = processData($(r),this.title,this.year,this.v);
+          data[0].id          = this.id;
+          data[0].avgInterval = this.avgInterval;
+          data[0].descr       = this.descr;
+          data[0].v           = this.v;
+          data[0].y           = this.y;
+          if (this.postProcess) {
+            data = postProcessData(data[0]);
           }
-        }));
-      }
-      return a;
-    })()
-  ).done(function() {
-  })},100);;
+          plotData = plotData.concat(data);
+          plot();
+        }
+      });
+    }
+  },100);
 }
 
 function postProcessData(d) {

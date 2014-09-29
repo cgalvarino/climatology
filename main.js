@@ -62,20 +62,10 @@ function init() {
   });
 
   _.each(catalog.years.sort(),function(o) {
-    $('#years .panel-body').append('<button type="button" data-value="' + o + '" class="btn btn-default">' + o + '</button> ');
+    var selected = defaults.year == o ? 'selected="selected"' : '';
+    $('#years select').append('<option value="' + o + '" ' + selected + '>' + o + '</option> ');
   });
-  $('#years [data-value="' + defaults.year + '"]').removeClass('btn-default').addClass('btn-custom-lighten active');
-  $('#years button').click(function() {
-    $(this).blur();
-    var selVal = $(this).data('value');
-    $('#years button').each(function() {
-      if ($(this).data('value') == selVal) {
-        $(this).removeClass('btn-default').addClass('btn-custom-lighten').addClass('active');
-      }
-      else {
-        $(this).removeClass('btn-custom-lighten').removeClass('active').addClass('btn-default');
-      }
-    });
+  $('#years').change(function() {
     query();
   });
 
@@ -493,7 +483,7 @@ function query() {
         ,title       : $('#vars .active').text() + ' from ' + siteQuery.attributes.name
         ,id          : 'obs'
         ,postProcess : true
-        ,year        : $('#years .active').text()
+        ,year        : $('#year').selectpicker('val')
         ,avgInterval : $('#averages .active').text()
         ,descr       : catalog['sites'][siteQuery.attributes.group][siteQuery.attributes.name].descr
       }
@@ -505,12 +495,12 @@ function query() {
       {
         getObs       : catalog['models']['SABGOM'].getObs(
            $('#vars .active').text()
-          ,$('#years .active').text()
+          ,$('#year').selectpicker('val')
           ,$('#averages .active').text()
           ,geom.x
           ,geom.y
         )
-        ,title       : $('#years .active').text() + ' ' + $('#vars .active').text() + ' from SABGOM'
+        ,title       : $('#year').selectpicker('val') + ' ' + $('#vars .active').text() + ' from SABGOM'
         ,id          : 'obs'
         ,avgInterval : $('#averages .active').text()
         ,descr       : catalog['models']['SABGOM'].descr
@@ -525,7 +515,7 @@ function query() {
           ,'min'
         )
         ,title       : catalog.years[0] + '-' + catalog.years[catalog.years.length - 1] + ' Minimum ' + $('#vars .active').text() + ' from SABGOM'
-        ,year        : $('#years .active').text()
+        ,year        : $('#year').selectpicker('val')
         ,id          : 'min'
         ,avgInterval : $('#averages .active').text()
       }
@@ -539,7 +529,7 @@ function query() {
           ,'max'
         )
         ,title       : catalog.years[0] + '-' + catalog.years[catalog.years.length - 1] + ' Maximum ' + $('#vars .active').text() + ' from SABGOM'
-        ,year        : $('#years .active').text()
+        ,year        : $('#year').selectpicker('val')
         ,id          : 'max'
         ,avgInterval : $('#averages .active').text()
       }
@@ -553,7 +543,7 @@ function query() {
           ,'avg'
         )
         ,title       : catalog.years[0] + '-' + catalog.years[catalog.years.length - 1] + ' Average ' + $('#vars .active').text() + ' from SABGOM'
-        ,year        : $('#years .active').text()
+        ,year        : $('#year').selectpicker('val')
         ,id          : 'avg'
         ,avgInterval : $('#averages .active').text()
       }
@@ -832,8 +822,9 @@ function resizeMap() {
 }
 
 function resizeAll() {
+  var fixedHeightBelowGraph = 120;
   $('#resultsWrapper').height($(window).height() - $('#title').height() - $('#resultsWrapper').position().top - 24);
-  $('#time-series-graph').height($('#resultsWrapper').height() - $('#time-series-graph').position().top + $('#resultsWrapper').position().top - 120);
+  $('#time-series-graph').height($('#resultsWrapper').height() - $('#time-series-graph').position().top + $('#resultsWrapper').position().top - fixedHeightBelowGraph);
   resizeMap();
   plot();
 }

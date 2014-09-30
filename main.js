@@ -357,10 +357,8 @@ function plot() {
 function prepareDownload() {
   // Get a list of all dates (dates may vary by line).
   var dates = [];
-  var cols  = ['Date'];
   var format;
   for (var i = 0; i < plotData.length; i++) {
-    cols.push(plotData[i].title ? plotData[i].title  + ' ' + plotData[i].uom : plotData[i].id);
     dates = dates.concat(_.map(plotData[i].data,function(o){return o ? o[0].getTime() : false}));
   };
   dates = _.filter(_.uniq(dates),function(o){return o}).sort();
@@ -380,6 +378,12 @@ function prepareDownload() {
     }
   }
 
+  var cols = ['Date'];
+  // reverse the cols in the headers
+  for (i = plotData.length - 1; i >= 0; i--) {
+    cols.push(plotData[i].title ? plotData[i].title  + ' ' + plotData[i].uom : plotData[i].id);
+  }
+
   var rows = [];
   _.each(data,function(v,k) {
     for (var i = 0; i < plotData.length; i++) {
@@ -387,7 +391,8 @@ function prepareDownload() {
         v[i] = null;
       }
     }
-    rows.push([new Date(Number(k)).format(format)].concat(v));
+    // reverse the cols in the data
+    rows.push([new Date(Number(k)).format(format)].concat(v.reverse()));
   });
 
   dataTable.fnClearTable();

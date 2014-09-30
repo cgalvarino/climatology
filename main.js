@@ -359,7 +359,7 @@ function prepareDownload() {
   var dates = [];
   var cols  = ['Date'];
   var format;
-  for (var i = plotData.length - 1; i >= 0; i--) {
+  for (var i = 0; i < plotData.length; i++) {
     cols.push(plotData[i].title ? plotData[i].title  + ' ' + plotData[i].uom : plotData[i].id);
     dates = dates.concat(_.map(plotData[i].data,function(o){return o ? o[0].getTime() : false}));
   };
@@ -382,7 +382,7 @@ function prepareDownload() {
 
   var rows = [];
   _.each(data,function(v,k) {
-    for (var i = 0; i <= plotData.length; i++) {
+    for (var i = 0; i < plotData.length; i++) {
       if (_.isUndefined(v[i])) {
         v[i] = null;
       }

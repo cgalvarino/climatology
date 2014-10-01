@@ -125,3 +125,8 @@ var defaults = {
   ,'avg'  : 'Day'
   ,'src'  : 'Buoy'
 };
+
+var verbiage = {
+   'buoyTT' : 'SECOORA partners: 3 stations operated and maintained by University of North Carolina, Wilmington (CRCOOS); 3 stations operated by the University of South Florida (USF)'
+  ,'modelTT' : 'North Carolina State University\'s Regional Scale Ocean Model:  South Atlantic Bight Gulf of Mexico (SABGOM)'
+};

@@ -9,6 +9,9 @@ var proj4326 = new OpenLayers.Projection("EPSG:4326");
 var dataTable;
 
 function init() {
+  $('#buoyTT').tooltip().attr('data-original-title',verbiage.buoyTT).tooltip('fixTitle');
+  $('#modelTT').tooltip().attr('data-original-title',verbiage.modelTT).tooltip('fixTitle');
+
   $('#coords .btn-default').on('click',function() {
     $('#location').selectpicker('val','custom');
     $('#coords').modal('hide');

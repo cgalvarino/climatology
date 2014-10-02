@@ -1,6 +1,24 @@
 var catalog = {
    'years'     : [2011,2012,2013,2014]
-  ,'variables' : ['Temperature','Salinity']
+  ,'variables' : [
+    {
+       name : 'Temperature'
+      ,uom  : function(u,o) {
+        if (/celsius/i.test(u)) {
+          return {label : 'Fahrenheit',value : o * 1.8 + 32};
+        }
+        else {
+          return {label : u,value : o};
+        }
+      }
+    }
+    ,{
+       name : 'Salinity'
+      ,uom  : function(u,o) {
+        return {label : u,value : o};
+      }
+    }
+  ]
   ,'sites' : {
     'CRCOOS' : {
       'CAP2' : {
@@ -127,6 +145,12 @@ var defaults = {
 };
 
 var verbiage = {
-   'buoyTT' : 'SECOORA partners: 3 stations operated and maintained by University of North Carolina, Wilmington (CRCOOS); 3 stations operated by the University of South Florida (USF)'
-  ,'modelTT' : 'North Carolina State University\'s Regional Scale Ocean Model:  South Atlantic Bight Gulf of Mexico (SABGOM)'
+  'buoyTT' : {
+     a    : 'SECOORA&nbsp;buoys'
+    ,info : '3 stations operated and maintained by University of North Carolina, Wilmington (CRCOOS); 3 stations operated by the University of South Florida (USF)'
+  }
+  ,'modelTT' : {
+     a    : 'model&nbsp;results'
+    ,info : 'North Carolina State University\'s Regional Scale Ocean Model:  South Atlantic Bight Gulf of Mexico (SABGOM)'
+  }
 };

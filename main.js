@@ -9,8 +9,10 @@ var proj4326 = new OpenLayers.Projection("EPSG:4326");
 var dataTable;
 
 function init() {
-  $('#buoyTT').tooltip().attr('data-original-title',verbiage.buoyTT).tooltip('fixTitle');
-  $('#modelTT').tooltip().attr('data-original-title',verbiage.modelTT).tooltip('fixTitle');
+  $('#buoyTT').html(verbiage.buoyTT.a);
+  $('#buoyTT').tooltip().attr('data-original-title',verbiage.buoyTT.info).tooltip('fixTitle');
+  $('#modelTT').html(verbiage.modelTT.a);
+  $('#modelTT').tooltip().attr('data-original-title',verbiage.modelTT.info).tooltip('fixTitle');
 
   $('#coords .btn-default').on('click',function() {
     $('#location').selectpicker('val','custom');
@@ -46,7 +48,7 @@ function init() {
     }
   });
 
-  _.each(catalog.variables.sort(),function(o) {
+  _.each(_.pluck(catalog.variables,'name').sort(),function(o) {
     $('#vars .panel-body').append('<button type="button" data-value="' + o + '" class="btn btn-default">' + o + '</button> ');
   });
   $('#vars [data-value="' + defaults.var + '"]').removeClass('btn-default').addClass('btn-custom-lighten active');
@@ -494,6 +496,7 @@ function query() {
         ,year        : $('#year').selectpicker('val')
         ,avgInterval : $('#averages .active').text()
         ,descr       : catalog['sites'][siteQuery.attributes.group][siteQuery.attributes.name].descr
+        ,uom         : _.findWhere(catalog['variables'],{name : $('#vars .active').text()}).uom
       }
     ];
   }
@@ -512,6 +515,7 @@ function query() {
         ,id          : 'obs'
         ,avgInterval : $('#averages .active').text()
         ,descr       : catalog['models']['SABGOM'].descr
+        ,uom         : _.findWhere(catalog['variables'],{name : $('#vars .active').text()}).uom
       }
       ,{
         getObs       : catalog['models']['SABGOM'].getObs(
@@ -526,6 +530,7 @@ function query() {
         ,year        : $('#year').selectpicker('val')
         ,id          : 'min'
         ,avgInterval : $('#averages .active').text()
+        ,uom         : _.findWhere(catalog['variables'],{name : $('#vars .active').text()}).uom
       }
       ,{
         getObs       : catalog['models']['SABGOM'].getObs(
@@ -540,6 +545,7 @@ function query() {
         ,year        : $('#year').selectpicker('val')
         ,id          : 'max'
         ,avgInterval : $('#averages .active').text()
+        ,uom         : _.findWhere(catalog['variables'],{name : $('#vars .active').text()}).uom
       }
       ,{
         getObs       : catalog['models']['SABGOM'].getObs(
@@ -554,6 +560,7 @@ function query() {
         ,year        : $('#year').selectpicker('val')
         ,id          : 'avg'
         ,avgInterval : $('#averages .active').text()
+        ,uom         : _.findWhere(catalog['variables'],{name : $('#vars .active').text()}).uom
       }
     ];
   }
@@ -585,8 +592,9 @@ function query() {
         ,postProcess : reqs[i].postProcess
         ,avgInterval : reqs[i].avgInterval
         ,descr       : reqs[i].descr
+        ,uom         : reqs[i].uom
         ,success     : function(r) {
-          var data = processData($(r),this.title,this.year,this.v);
+          var data = processData($(r),this.title,this.year,this.v,this.uom);
           data[0].id          = this.id;
           data[0].avgInterval = this.avgInterval;
           data[0].descr       = this.descr;
@@ -699,7 +707,7 @@ function postProcessData(d) {
   return [d,dAvg,dMin,dMax];
 }
 
-function processData($xml,title,year,v) {
+function processData($xml,title,year,v,uom) {
   var d = {
      title : title
     ,year  : year
@@ -709,7 +717,8 @@ function processData($xml,title,year,v) {
   if (ncss.length > 0) { // NetcdfSubset response
     ncss.each(function() {
       var point = $(this);
-      d.uom = point.find('[name=' + v + ']').attr('units');
+      var u     = point.find('[name=' + v + ']').attr('units');
+      d.uom = uom(u).label;
       var t = point.find('[name=date]').text();
       // undo fake dates for stats
       if (!_.isUndefined(year)) {
@@ -717,22 +726,26 @@ function processData($xml,title,year,v) {
       }
       d.data.push([
          isoDateToDate(t)
-        ,point.find('[name=' + v + ']').text()
+        ,uom(u,point.find('[name=' + v + ']').text()).value
       ]);
       d.label = '&nbsp;' + title;
     });
   }
   else { // ncSOS response
-    d.uom   = $xml.find('uom[code],swe\\:uom[code]').attr('code');
+    var u   = $xml.find('uom[code],swe\\:uom[code]').attr('code');
+    d.uom   = uom(u).label;
     var nil = [$xml.find('nilValue,swe\\:nilValue').text()];
     d.label = '&nbsp;' + title + ' (' + d.uom + ')';
     _.each($xml.find('values,swe\\:values').text().split(" "),function(o) {
       var a = o.split(',');
       if ((a.length == 2) && $.isNumeric(a[1]) && nil.indexOf(a[1]) < 0) {
-        d.data.push([isoDateToDate(a[0]),a[1]]);
+        d.data.push([isoDateToDate(a[0]),uom(u,a[1]).value]);
       }
     });
   }
+
+  // do any necessary unit conversions
+
   return [d];
 }
 

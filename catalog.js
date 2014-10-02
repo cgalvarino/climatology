@@ -147,7 +147,7 @@ var defaults = {
 var verbiage = {
   'buoyTT' : {
      a    : 'SECOORA&nbsp;buoys'
-    ,info : '3 stations operated and maintained by University of North Carolina, Wilmington (CRCOOS); 3 stations operated by the University of South Florida (USF)'
+    ,info : 'Three stations operated and maintained by University of North Carolina, Wilmington (CRCOOS); Three stations operated by the University of South Florida (USF)'
   }
   ,'modelTT' : {
      a    : 'model&nbsp;results'

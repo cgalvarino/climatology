@@ -96,3 +96,7 @@ div.dataTables_wrapper { clear: both;position: absolute;top : 0}
 #dataTable {
   display: none;
 }
+
+.bootstrap-select:not([class*="span"]):not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn) {
+  width: 200px;
+}

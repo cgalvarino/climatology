@@ -190,7 +190,6 @@ function init() {
         })
         .on('error.validator.bv', function(e, data) {
           data.element
-          .data('bv.legend')
           // Hide all the messages
           .find('.help-block[data-bv-for="' + data.field + '"]').hide()
           // Show only message associated with current validator

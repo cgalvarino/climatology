@@ -108,7 +108,7 @@ function init() {
         $(this).removeClass('btn-custom-lighten').removeClass('active').addClass('btn-default');
       }
     });
-    $('#location optgroup[label="Custom"]').prop('disabled',selVal == 'Buoy');
+    $('#location optgroup[label="Custom (model only)"]').prop('disabled',selVal == 'Buoy');
     // We will need to select a default buoy if the current location isn't a buoy (null).
     if (selVal == 'Buoy' && _.isNull($('#location').selectpicker('val'))) {
       $('#location').selectpicker('val',$('#location option[value!="custom"][value!="manual"]').first().val());
@@ -140,7 +140,7 @@ function init() {
   });
 
   if (defaults.src == 'Buoy') {
-    $('#location optgroup[label="Custom"]').prop('disabled',true);
+    $('#location optgroup[label="Custom (model only)"]').prop('disabled',true);
     $('#location').selectpicker('refresh');
     $('#map').fadeTo(0,0.5);
   }

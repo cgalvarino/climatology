@@ -186,7 +186,11 @@ function init() {
         })
         .on('shown.bs.modal', function() {
           $('#coords').bootstrapValidator('resetForm',true);
-          $('#coords').find('[name="customLat"]').focus();
+          if (lyrQuery.features.length == 1) {
+            var g = lyrQuery.features[0].geometry.clone().transform(proj3857,proj4326);
+            $('#customLon').val(Math.round(g.x * 10000) / -10000);
+            $('#customLat').val(Math.round(g.y * 10000) / 10000);
+          }
         })
         .on('error.validator.bv', function(e, data) {
           data.element
@@ -199,7 +203,7 @@ function init() {
           e.preventDefault();
           lyrQuery.removeAllFeatures();
           var f = new OpenLayers.Feature.Vector(
-            new OpenLayers.Geometry.Point($('#customLon').val(),$('#customLat').val()).transform(proj4326,proj3857)
+            new OpenLayers.Geometry.Point($('#customLon').val() * -1,$('#customLat').val()).transform(proj4326,proj3857)
           );
           lyrQuery.addFeatures([f]);
           $('#location').selectpicker('val','custom');
